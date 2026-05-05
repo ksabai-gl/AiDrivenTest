@@ -4,7 +4,6 @@
   "version": "1.0.0",
   "description": "Local MCP server packages for this workspace (managed by orchestration UI).",
   "dependencies": {
-    "@aashari/mcp-server-atlassian-jira": "*",
-    "@modelcontextprotocol/server-github": "*"
+    "@aashari/mcp-server-atlassian-jira": "*"
   }
 }

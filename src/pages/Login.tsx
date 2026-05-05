@@ -1,149 +1,224 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
-import styles from './Login.module.css';
+import { type FormEvent, useId, useMemo, useState } from "react";
+import axios, { isAxiosError } from "axios";
+import { useNavigate } from "react-router-dom";
+import { AUTH_TOKEN_STORAGE_KEY } from "../auth/storage";
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const GENERIC_ERROR =
+  "Something went wrong. Please try again in a few moments.";
+const INVALID_CREDENTIALS = "Invalid email or password";
 
-const isValidEmail = (value: string): boolean => EMAIL_REGEX.test(value);
-
-interface LocationState {
-  from?: string;
+function isValidEmail(value: string): boolean {
+  const trimmed = value.trim();
+  if (!trimmed) return false;
+  // Practical email shape check (not full RFC 5322).
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);
 }
 
-const Login: React.FC = () => {
+type LoginSuccessBody = { token: string };
+
+export function LoginPage() {
   const navigate = useNavigate();
-  const location = useLocation();
+  const baseId = useId();
+  const emailId = `${baseId}-email`;
+  const passwordId = `${baseId}-password`;
+  const emailErrorId = `${baseId}-email-error`;
+  const passwordErrorId = `${baseId}-password-error`;
+  const apiErrorId = `${baseId}-api-error`;
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const apiBaseUrl = (
+    import.meta.env.REACT_APP_API_BASE_URL ?? ""
+  ).replace(/\/$/, "");
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [emailTouched, setEmailTouched] = useState(false);
+  const [passwordTouched, setPasswordTouched] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [emailError, setEmailError] = useState<string | null>(null);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
-  const passwordRef = useRef<HTMLInputElement>(null);
+  const emailTrimmed = email.trim();
+  const passwordNonEmpty = password.length > 0;
+  const emailFormatOk = isValidEmail(email);
 
-  // AC-B03: redirect away if already authenticated
-  useEffect(() => {
-    if (localStorage.getItem('authToken')) {
-      navigate('/dashboard', { replace: true });
-    }
-  }, [navigate]);
+  const emailError = useMemo(() => {
+    if (!emailTouched && !submitAttempted) return null;
+    if (!emailTrimmed) return "Email is required.";
+    if (!emailFormatOk) return "Enter a valid email address.";
+    return null;
+  }, [emailTrimmed, emailFormatOk, emailTouched, submitAttempted]);
 
-  // AC-C01 / AC-C04: inline email validation on change
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setEmail(value);
-    if (value && !isValidEmail(value)) {
-      setEmailError('Please enter a valid email address');
-    } else {
-      setEmailError(null);
-    }
-  };
+  const passwordError = useMemo(() => {
+    if (!passwordTouched && !submitAttempted) return null;
+    if (!passwordNonEmpty) return "Password is required.";
+    return null;
+  }, [passwordNonEmpty, passwordTouched, submitAttempted]);
 
-  // AC-A02 / AC-A03 / AC-C01: button disabled logic
-  const isSubmitDisabled =
-    !email.trim() || !password.trim() || !isValidEmail(email) || isLoading;
+  const submitDisabled =
+    !emailTrimmed ||
+    !passwordNonEmpty ||
+    !emailFormatOk ||
+    !apiBaseUrl ||
+    isLoading;
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function onSubmit(e: FormEvent) {
     e.preventDefault();
-    if (isSubmitDisabled) return;
+    setSubmitAttempted(true);
+    setEmailTouched(true);
+    setPasswordTouched(true);
+    setApiError(null);
+
+    if (!apiBaseUrl) {
+      setApiError("API base URL is not configured. Set REACT_APP_API_BASE_URL.");
+      return;
+    }
+
+    const fieldErrorsPresent = !emailTrimmed || !passwordNonEmpty || !emailFormatOk;
+    if (fieldErrorsPresent) return;
 
     setIsLoading(true);
-    setErrorMessage(null);
-
     try {
-      const baseUrl = process.env.REACT_APP_API_BASE_URL ?? '';
-      // AC-C09: POST with { email, password }, Content-Type: application/json (axios default)
-      const response = await axios.post(`${baseUrl}/api/auth/login`, { email, password });
+      const { data } = await axios.post<LoginSuccessBody>(
+        `${apiBaseUrl}/auth/login`,
+        { email: emailTrimmed, password },
+        { headers: { "Content-Type": "application/json" } },
+      );
 
-      // AC-B01 / AC-A04: store JWT and navigate
-      localStorage.setItem('authToken', response.data.token);
-      const from = (location.state as LocationState)?.from ?? '/dashboard';
-      navigate(from, { replace: true });
-    } catch (err) {
-      if (axios.isAxiosError(err) && err.response?.status === 401) {
-        // AC-A05 / AC-C03 / AC-B02: 401 — show message, no token stored
-        setErrorMessage('Invalid email or password. Please try again.');
-      } else {
-        // AC-C07: network / 5xx
-        setErrorMessage('An unexpected error occurred. Please try again later.');
+      if (!data?.token || typeof data.token !== "string" || data.token.length === 0) {
+        setApiError(GENERIC_ERROR);
+        return;
       }
-      // AC-A06: clear password and refocus
-      setPassword('');
-      passwordRef.current?.focus();
+
+      localStorage.setItem(AUTH_TOKEN_STORAGE_KEY, data.token);
+      navigate("/dashboard", { replace: true });
+    } catch (err: unknown) {
+      if (!isAxiosError(err)) {
+        setApiError(GENERIC_ERROR);
+        return;
+      }
+
+      const status = err.response?.status;
+      if (status === 401) {
+        setApiError(INVALID_CREDENTIALS);
+        return;
+      }
+      if (typeof status === "number" && status >= 500) {
+        setApiError(GENERIC_ERROR);
+        return;
+      }
+      setApiError(GENERIC_ERROR);
     } finally {
       setIsLoading(false);
     }
-  };
+  }
 
   return (
-    <main className={styles.container}>
-      <div className={styles.card} role="main">
-        <h1 className={styles.title}>Sign In</h1>
+    <main className="min-h-screen flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-md rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm sm:p-8">
+        <h1 className="text-2xl font-semibold tracking-tight text-neutral-900">
+          Sign in
+        </h1>
+        <p className="mt-2 text-sm text-neutral-600">
+          Use your work email and password to continue.
+        </p>
 
-        <form onSubmit={handleSubmit} noValidate aria-label="Login form">
-          {/* Email field */}
-          <div className={styles.field}>
-            <label htmlFor="email" className={styles.label}>
+        <form className="mt-8 space-y-5" onSubmit={onSubmit} noValidate>
+          <div>
+            <label
+              htmlFor={emailId}
+              className="block text-sm font-medium text-neutral-800"
+            >
               Email
             </label>
             <input
-              id="email"
+              id={emailId}
+              name="email"
               type="email"
-              className={`${styles.input} ${emailError ? styles.inputError : ''}`}
-              value={email}
-              onChange={handleEmailChange}
               autoComplete="email"
-              aria-describedby={emailError ? 'email-error' : undefined}
-              aria-invalid={!!emailError}
-              disabled={isLoading}
+              inputMode="email"
+              spellCheck={false}
+              required
+              aria-required="true"
+              aria-invalid={emailError ? "true" : "false"}
+              aria-describedby={emailError ? emailErrorId : undefined}
+              className={`mt-1 block w-full rounded-lg border px-3 py-2 text-sm shadow-sm outline-none transition focus:ring-2 ${
+                emailError
+                  ? "border-red-300 focus:border-red-400 focus:ring-red-200"
+                  : "border-neutral-300 focus:border-indigo-500 focus:ring-indigo-200"
+              }`}
+              value={email}
+              onChange={(ev) => setEmail(ev.target.value)}
+              onBlur={() => setEmailTouched(true)}
             />
-            {/* AC-C01: inline email validation message */}
-            {emailError && (
-              <span id="email-error" className={styles.fieldError} role="alert">
+            {emailError ? (
+              <p id={emailErrorId} className="mt-2 text-sm text-red-700" role="alert">
                 {emailError}
-              </span>
-            )}
+              </p>
+            ) : null}
           </div>
 
-          {/* Password field — AC-C08: type="password" */}
-          <div className={styles.field}>
-            <label htmlFor="password" className={styles.label}>
+          <div>
+            <label
+              htmlFor={passwordId}
+              className="block text-sm font-medium text-neutral-800"
+            >
               Password
             </label>
             <input
-              id="password"
+              id={passwordId}
+              name="password"
               type="password"
-              className={styles.input}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
               autoComplete="current-password"
-              ref={passwordRef}
-              disabled={isLoading}
+              required
+              aria-required="true"
+              aria-invalid={passwordError ? "true" : "false"}
+              aria-describedby={passwordError ? passwordErrorId : undefined}
+              className={`mt-1 block w-full rounded-lg border px-3 py-2 text-sm shadow-sm outline-none transition focus:ring-2 ${
+                passwordError
+                  ? "border-red-300 focus:border-red-400 focus:ring-red-200"
+                  : "border-neutral-300 focus:border-indigo-500 focus:ring-indigo-200"
+              }`}
+              value={password}
+              onChange={(ev) => setPassword(ev.target.value)}
+              onBlur={() => setPasswordTouched(true)}
             />
+            {passwordError ? (
+              <p
+                id={passwordErrorId}
+                className="mt-2 text-sm text-red-700"
+                role="alert"
+              >
+                {passwordError}
+              </p>
+            ) : null}
           </div>
 
-          {/* AC-A05 / AC-C03 / AC-C07: API error message */}
-          {errorMessage && (
-            <p className={styles.errorMessage} role="alert" aria-live="assertive">
-              {errorMessage}
+          {apiError ? (
+            <p id={apiErrorId} className="text-sm text-red-700" role="alert">
+              {apiError}
             </p>
-          )}
+          ) : null}
 
-          {/* AC-A02 / AC-A03 / AC-C06: disabled + loading state */}
           <button
             type="submit"
-            className={styles.button}
-            disabled={isSubmitDisabled}
+            disabled={submitDisabled}
             aria-busy={isLoading}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {isLoading ? 'Signing in…' : 'Login'}
+            {isLoading ? (
+              <>
+                <span
+                  className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"
+                  aria-hidden="true"
+                />
+                <span>Signing in…</span>
+              </>
+            ) : (
+              "Sign in"
+            )}
           </button>
         </form>
       </div>
     </main>
   );
-};
-
-export default Login;
+}
