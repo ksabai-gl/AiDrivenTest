@@ -1,12 +1,12 @@
-export function DashboardPage() {
+const Dashboard = () => {
   return (
-    <main className="min-h-screen flex items-center justify-center p-4">
-      <div className="rounded-2xl border border-neutral-200 bg-white px-8 py-6 shadow-sm">
-        <h1 className="text-xl font-semibold text-neutral-900">Dashboard</h1>
-        <p className="mt-2 text-sm text-neutral-600">
-          You are signed in. Protected content lives here.
-        </p>
-      </div>
+    <main className="flex min-h-screen items-center justify-center bg-slate-100 p-4">
+      <section className="w-full max-w-xl rounded-lg bg-white p-8 shadow">
+        <h1 className="text-2xl font-semibold text-slate-900">Dashboard</h1>
+        <p className="mt-3 text-slate-600">You are successfully logged in.</p>
+      </section>
     </main>
   );
-}
+};
+
+export default Dashboard;

@@ -1,9 +1,12 @@
 node_modules
 dist
 .DS_Store
-*.local
 .env
-coverage/
+coverage
 .cursor/
-*.tsbuildinfo
 .kiro/settings/mcp.json
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
+vitest.config.js
+vitest.config.d.ts

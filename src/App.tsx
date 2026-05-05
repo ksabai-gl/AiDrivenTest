@@ -1,14 +1,15 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import { LoginPage } from "./pages/Login";
-import { DashboardPage } from "./pages/Dashboard";
+import Dashboard from "./pages/Dashboard";
+import Login from "./pages/Login";
 
-export function App() {
+const App = () => {
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/login" replace />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/dashboard" element={<DashboardPage />} />
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/dashboard" element={<Dashboard />} />
     </Routes>
   );
-}
+};
+
+export default App;

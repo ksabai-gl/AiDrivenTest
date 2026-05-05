@@ -2,12 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-html,
-body,
-#root {
-  height: 100%;
-}
-
 body {
-  @apply m-0 antialiased text-neutral-900 bg-neutral-100;
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
 }

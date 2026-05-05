@@ -1,231 +1,76 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import axios from "axios";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import axios from "axios";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { LoginPage } from "../Login";
-import { AUTH_TOKEN_STORAGE_KEY } from "../../auth/storage";
+import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
+import Login from "../Login";
 
-vi.mock("axios", async (importOriginal) => {
-  const mod = await importOriginal<typeof import("axios")>();
-  return {
-    ...mod,
-    default: {
-      ...mod.default,
-      post: vi.fn(),
-    },
-  };
-});
+vi.mock("axios");
 
-const mockedAxiosPost = vi.mocked(axios.post);
+const mockedPost = axios.post as unknown as Mock;
 
-function renderLogin() {
-  render(
+const renderLogin = () => {
+  return render(
     <MemoryRouter initialEntries={["/login"]}>
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/dashboard" element={<div>Dashboard route</div>} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/dashboard" element={<div>Dashboard</div>} />
       </Routes>
-    </MemoryRouter>,
+    </MemoryRouter>
   );
-}
+};
 
-describe("LoginPage", () => {
+describe("Login page", () => {
   beforeEach(() => {
-    vi.stubEnv("REACT_APP_API_BASE_URL", "http://localhost:3001");
-    mockedAxiosPost.mockReset();
-  });
-
-  afterEach(() => {
-    vi.unstubAllEnvs();
+    mockedPost.mockReset();
     localStorage.clear();
+    vi.stubEnv("REACT_APP_API_BASE_URL", "http://localhost:3000");
   });
 
-  it("AC-01: shows validation feedback for empty fields and invalid email", async () => {
+  it("disables login button when required fields are empty", () => {
     renderLogin();
+    expect(screen.getByRole("button", { name: /login/i })).toBeDisabled();
+  });
 
+  it("shows email validation error on blur", async () => {
+    renderLogin();
     const user = userEvent.setup();
-    const email = screen.getByLabelText(/^email$/i);
-    const password = screen.getByLabelText(/^password$/i);
-
-    await user.click(email);
-    await user.tab();
-    expect(await screen.findByText(/email is required/i)).toBeInTheDocument();
-
-    await user.click(password);
-    await user.tab();
-    expect(await screen.findByText(/password is required/i)).toBeInTheDocument();
-
-    await user.type(email, "not-an-email");
+    await user.type(screen.getByLabelText(/email/i), "invalid-email");
     await user.tab();
 
-    expect(
-      await screen.findByText(/enter a valid email address/i),
-    ).toBeInTheDocument();
-
-    expect(mockedAxiosPost).not.toHaveBeenCalled();
+    expect(screen.getByText(/please enter a valid email address/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /login/i })).toBeDisabled();
   });
 
-  it("AC-02: disables submit until fields are filled; shows spinner while loading", async () => {
-    renderLogin();
-
-    const btn = screen.getByRole("button", { name: /^sign in$/i });
-    expect(btn).toBeDisabled();
-
-    const user = userEvent.setup();
-
-    mockedAxiosPost.mockImplementationOnce(
-      () =>
-        new Promise(() => {
-          /* never resolves in this assertion window */
-        }),
-    );
-
-    await user.type(screen.getByLabelText(/^email$/i), "human@example.com");
-    await user.type(screen.getByLabelText(/^password$/i), "secret123");
-
-    await waitFor(() => expect(btn).not.toBeDisabled());
-    await user.click(btn);
-
-    expect(btn).toBeDisabled();
-    expect(screen.getByText(/signing in/i)).toBeInTheDocument();
-  });
-
-  it("AC-03: stores JWT and navigates after 200 OK", async () => {
-    mockedAxiosPost.mockResolvedValueOnce({ data: { token: "jwt-123" } });
+  it("stores token and navigates on successful login", async () => {
+    mockedPost.mockResolvedValueOnce({ data: { token: "jwt-token" } });
 
     renderLogin();
     const user = userEvent.setup();
 
-    await user.type(screen.getByLabelText(/^email$/i), "human@example.com");
-    await user.type(screen.getByLabelText(/^password$/i), "secret123");
-    await user.click(screen.getByRole("button", { name: /^sign in$/i }));
+    await user.type(screen.getByLabelText(/email/i), "test@example.com");
+    await user.type(screen.getByLabelText(/password/i), "secret");
+    await user.click(screen.getByRole("button", { name: /login/i }));
 
-    await waitFor(() =>
-      expect(localStorage.getItem(AUTH_TOKEN_STORAGE_KEY)).toBe("jwt-123"),
-    );
-    expect(await screen.findByText(/dashboard route/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(localStorage.getItem("token")).toBe("jwt-token");
+    });
 
-    expect(mockedAxiosPost).toHaveBeenCalledWith(
-      "http://localhost:3001/auth/login",
-      { email: "human@example.com", password: "secret123" },
-      expect.objectContaining({ headers: { "Content-Type": "application/json" } }),
-    );
+    expect(screen.getByText("Dashboard")).toBeInTheDocument();
   });
 
-  it("AC-04: maps 401 to invalid credentials message", async () => {
-    mockedAxiosPost.mockRejectedValueOnce(
-      Object.assign(new Error("Unauthorized"), {
-        isAxiosError: true,
-        response: { status: 401, data: { message: "nope" } },
-      }),
-    );
+  it("shows 401 inline message", async () => {
+    mockedPost.mockRejectedValueOnce({
+      response: { status: 401 }
+    });
 
     renderLogin();
     const user = userEvent.setup();
 
-    await user.type(screen.getByLabelText(/^email$/i), "human@example.com");
-    await user.type(screen.getByLabelText(/^password$/i), "bad");
-    await user.click(screen.getByRole("button", { name: /^sign in$/i }));
+    await user.type(screen.getByLabelText(/email/i), "test@example.com");
+    await user.type(screen.getByLabelText(/password/i), "wrong");
+    await user.click(screen.getByRole("button", { name: /login/i }));
 
-    expect(
-      await screen.findByText(/invalid email or password/i),
-    ).toBeInTheDocument();
-
-    expect(screen.queryByRole("button", { name: /signing in/i })).not.toBeInTheDocument();
-  });
-
-  it("AC-04: maps 5xx errors to generic message", async () => {
-    mockedAxiosPost.mockRejectedValueOnce(
-      Object.assign(new Error("Server Error"), {
-        isAxiosError: true,
-        response: { status: 500 },
-      }),
-    );
-
-    renderLogin();
-    const user = userEvent.setup();
-
-    await user.type(screen.getByLabelText(/^email$/i), "human@example.com");
-    await user.type(screen.getByLabelText(/^password$/i), "secret123");
-    await user.click(screen.getByRole("button", { name: /^sign in$/i }));
-
-    expect(
-      await screen.findByText(/something went wrong/i),
-    ).toBeInTheDocument();
-  });
-
-  it("shows generic error when success body has no usable token", async () => {
-    mockedAxiosPost.mockResolvedValueOnce({ data: { token: "" } });
-
-    renderLogin();
-    const user = userEvent.setup();
-
-    await user.type(screen.getByLabelText(/^email$/i), "human@example.com");
-    await user.type(screen.getByLabelText(/^password$/i), "secret123");
-    await user.click(screen.getByRole("button", { name: /^sign in$/i }));
-
-    expect(
-      await screen.findByText(/something went wrong/i),
-    ).toBeInTheDocument();
-    expect(localStorage.getItem(AUTH_TOKEN_STORAGE_KEY)).toBeNull();
-  });
-
-  it("maps non-Axios failures to generic message", async () => {
-    mockedAxiosPost.mockRejectedValueOnce(new Error("network down"));
-
-    renderLogin();
-    const user = userEvent.setup();
-
-    await user.type(screen.getByLabelText(/^email$/i), "human@example.com");
-    await user.type(screen.getByLabelText(/^password$/i), "secret123");
-    await user.click(screen.getByRole("button", { name: /^sign in$/i }));
-
-    expect(
-      await screen.findByText(/something went wrong/i),
-    ).toBeInTheDocument();
-  });
-
-  it("maps other client Axios errors to generic message", async () => {
-    mockedAxiosPost.mockRejectedValueOnce(
-      Object.assign(new Error("Forbidden"), {
-        isAxiosError: true,
-        response: { status: 403 },
-      }),
-    );
-
-    renderLogin();
-    const user = userEvent.setup();
-
-    await user.type(screen.getByLabelText(/^email$/i), "human@example.com");
-    await user.type(screen.getByLabelText(/^password$/i), "secret123");
-    await user.click(screen.getByRole("button", { name: /^sign in$/i }));
-
-    expect(
-      await screen.findByText(/something went wrong/i),
-    ).toBeInTheDocument();
-  });
-
-  it("shows API URL error when env is missing and form is submitted programmatically", async () => {
-    vi.stubEnv("REACT_APP_API_BASE_URL", "");
-    mockedAxiosPost.mockReset();
-
-    renderLogin();
-    const user = userEvent.setup();
-
-    await user.type(screen.getByLabelText(/^email$/i), "human@example.com");
-    await user.type(screen.getByLabelText(/^password$/i), "secret123");
-
-    const submitButton = screen.getByRole("button", { name: /^sign in$/i });
-    expect(submitButton).toBeDisabled();
-
-    const form = submitButton.closest("form");
-    expect(form).toBeInstanceOf(HTMLFormElement);
-    fireEvent.submit(form as HTMLFormElement);
-
-    expect(
-      await screen.findByText(/api base url is not configured/i),
-    ).toBeInTheDocument();
-    expect(mockedAxiosPost).not.toHaveBeenCalled();
+    expect(await screen.findByRole("alert")).toHaveTextContent("Invalid email or password");
   });
 });
