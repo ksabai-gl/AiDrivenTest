@@ -28,4 +28,19 @@ describe('App routing', () => {
     expect(screen.getByText('user@example.com')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /start tour/i })).toBeInTheDocument();
   });
+
+  it('should redirect unauthenticated users from /profile to /login', () => {
+    renderAppAt('/profile');
+
+    expect(screen.getByRole('heading', { name: /sign in/i })).toBeInTheDocument();
+  });
+
+  it('should render profile with dummy name and avatar when token is present', () => {
+    localStorage.setItem('token', 'jwt-abc');
+    renderAppAt('/profile');
+
+    expect(screen.getByRole('heading', { name: /profile/i })).toBeInTheDocument();
+    expect(screen.getByText('Alex Demo')).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: /user avatar/i })).toBeInTheDocument();
+  });
 });
