@@ -115,6 +115,7 @@ describe('LoginPage', () => {
 
       await waitFor(() => {
         expect(localStorage.getItem('token')).toBe('jwt-abc');
+        expect(localStorage.getItem('userEmail')).toBe('user@example.com');
         expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
       });
     });

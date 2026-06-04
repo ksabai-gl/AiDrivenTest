@@ -1,12 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
-
-const Dashboard: React.FC = () => (
-  <main className="min-h-screen flex items-center justify-center">
-    <h1 className="text-2xl font-bold">Dashboard</h1>
-  </main>
-);
+import DashboardPage from './pages/DashboardPage';
 
 const RequireAuth: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   localStorage.getItem('token') ? <>{children}</> : <Navigate to="/login" replace />;
@@ -19,7 +14,7 @@ const App: React.FC = () => (
         path="/dashboard"
         element={
           <RequireAuth>
-            <Dashboard />
+            <DashboardPage />
           </RequireAuth>
         }
       />

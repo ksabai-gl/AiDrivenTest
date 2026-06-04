@@ -19,10 +19,13 @@ describe('App routing', () => {
     expect(screen.getByRole('heading', { name: /sign in/i })).toBeInTheDocument();
   });
 
-  it('should render dashboard when token is present', () => {
+  it('should render dashboard with user and Start Tour when token is present', () => {
     localStorage.setItem('token', 'jwt-abc');
+    localStorage.setItem('userEmail', 'user@example.com');
     renderAppAt('/dashboard');
 
     expect(screen.getByRole('heading', { name: /dashboard/i })).toBeInTheDocument();
+    expect(screen.getByText('user@example.com')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /start tour/i })).toBeInTheDocument();
   });
 });

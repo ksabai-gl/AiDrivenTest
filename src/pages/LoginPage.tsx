@@ -48,6 +48,7 @@ const LoginPage: React.FC = () => {
     try {
       const { token } = await login({ email, password });
       localStorage.setItem('token', token);
+      localStorage.setItem('userEmail', email);
       navigate('/dashboard');
     } catch (err) {
       if (axios.isAxiosError(err)) {
