@@ -43,4 +43,11 @@ describe('App routing', () => {
     expect(screen.getByText('Alex Demo')).toBeInTheDocument();
     expect(screen.getByRole('img', { name: /user avatar/i })).toBeInTheDocument();
   });
+
+  it('should render profile logout button when authenticated (MAD-38)', () => {
+    localStorage.setItem('token', 'jwt-abc');
+    renderAppAt('/profile');
+
+    expect(screen.getByRole('button', { name: /log out/i })).toBeInTheDocument();
+  });
 });
