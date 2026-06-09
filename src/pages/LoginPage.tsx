@@ -158,7 +158,13 @@ const LoginPage: React.FC = () => {
             )}
           </div>
 
-          <div className="mb-4 flex justify-end">
+          <div className="mb-4 flex justify-between items-center">
+            <button
+              type="button"
+              className="text-sm text-indigo-600 hover:text-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded"
+            >
+              Sign Up
+            </button>
             <button
               type="button"
               className="text-sm text-indigo-600 hover:text-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded"

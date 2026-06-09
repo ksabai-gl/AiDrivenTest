@@ -349,7 +349,7 @@ describe("LoginPage", () => {
       });
       expect(resetButton).toHaveAttribute("type", "button");
       expect(resetButton).toHaveClass("text-indigo-600");
-      expect(resetButton.parentElement).toHaveClass("justify-end");
+      expect(resetButton.parentElement).toHaveClass("justify-between");
     });
   });
 
@@ -363,9 +363,56 @@ describe("LoginPage", () => {
       await userEvent.tab();
       await userEvent.tab();
       await userEvent.tab();
+      await userEvent.tab();
 
       expect(resetButton).toHaveFocus();
       expect(resetButton).toHaveClass("focus:ring-2");
+    });
+  });
+
+  describe("AC-E01 — sign up control visible", () => {
+    it("should render a Sign Up button on the login form", () => {
+      renderLoginPage();
+
+      expect(
+        screen.getByRole("button", { name: /sign up/i }),
+      ).toBeInTheDocument();
+    });
+  });
+
+  describe("AC-E02 — sign up control has no wiring", () => {
+    it("should not call login API or navigate when sign up is clicked", async () => {
+      renderLoginPage();
+
+      await userEvent.click(screen.getByRole("button", { name: /sign up/i }));
+
+      expect(mockLogin).not.toHaveBeenCalled();
+      expect(mockNavigate).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("AC-E03 — sign up visual consistency", () => {
+    it("should render sign up as a non-submit button with link styling in justify-between row", () => {
+      renderLoginPage();
+
+      const signUpButton = screen.getByRole("button", { name: /sign up/i });
+      expect(signUpButton).toHaveAttribute("type", "button");
+      expect(signUpButton).toHaveClass("text-indigo-600");
+      expect(signUpButton.parentElement).toHaveClass("justify-between");
+    });
+  });
+
+  describe("AC-E04 — sign up accessibility", () => {
+    it("should expose an accessible name and be keyboard focusable", async () => {
+      renderLoginPage();
+
+      const signUpButton = screen.getByRole("button", { name: /sign up/i });
+      await userEvent.tab();
+      await userEvent.tab();
+      await userEvent.tab();
+
+      expect(signUpButton).toHaveFocus();
+      expect(signUpButton).toHaveClass("focus:ring-2");
     });
   });
 
