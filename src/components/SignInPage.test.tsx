@@ -1,14 +1,14 @@
 /**
- * MAD-71 — Sign-In Screen automated tests
+ * MAD-71 — Login Screen automated tests
  * Jira: https://globallogic-team-ioe3w3ht.atlassian.net/browse/MAD-71
- * Traceability: AC-01 through AC-06
+ * Traceability: AC-01 through AC-05
  */
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { SignInPage } from './SignInPage';
 
-describe('SignInPage (MAD-71)', () => {
+describe('SignInPage (MAD-71 login screen)', () => {
   it('AC-01: Username field is visible and accepts text entry', async () => {
     const user = userEvent.setup();
     render(<SignInPage />);
@@ -21,19 +21,7 @@ describe('SignInPage (MAD-71)', () => {
     expect(username).toHaveValue('testuser');
   });
 
-  it('AC-02: Email field is visible and accepts text entry', async () => {
-    const user = userEvent.setup();
-    render(<SignInPage />);
-
-    const email = screen.getByLabelText(/^email$/i);
-    expect(email).toBeVisible();
-    expect(email).toHaveAttribute('type', 'email');
-
-    await user.type(email, 'user@example.com');
-    expect(email).toHaveValue('user@example.com');
-  });
-
-  it('AC-03: Password field is visible and masks entered characters', async () => {
+  it('AC-02: Password field is visible and masks entered characters', async () => {
     const user = userEvent.setup();
     render(<SignInPage />);
 
@@ -45,19 +33,16 @@ describe('SignInPage (MAD-71)', () => {
     expect(password).toHaveValue('secret123');
   });
 
-  it('AC-04: Confirm Password field is visible and masks entered characters', async () => {
-    const user = userEvent.setup();
+  it('AC-03: Login button is visible and enabled', () => {
     render(<SignInPage />);
 
-    const confirmPassword = screen.getByLabelText(/confirm password/i);
-    expect(confirmPassword).toBeVisible();
-    expect(confirmPassword).toHaveAttribute('type', 'password');
-
-    await user.type(confirmPassword, 'secret123');
-    expect(confirmPassword).toHaveValue('secret123');
+    const loginButton = screen.getByRole('button', { name: /^login$/i });
+    expect(loginButton).toBeVisible();
+    expect(loginButton).toBeEnabled();
+    expect(loginButton).toHaveAttribute('type', 'button');
   });
 
-  it('AC-05: Sign in button is visible and enabled', () => {
+  it('AC-04: Sign in button is visible and enabled', () => {
     render(<SignInPage />);
 
     const signInButton = screen.getByRole('button', { name: /sign in/i });
@@ -66,13 +51,24 @@ describe('SignInPage (MAD-71)', () => {
     expect(signInButton).toHaveAttribute('type', 'button');
   });
 
+  it('AC-05: Reset password button is visible and enabled', () => {
+    render(<SignInPage />);
+
+    const resetButton = screen.getByRole('button', { name: /reset password/i });
+    expect(resetButton).toBeVisible();
+    expect(resetButton).toBeEnabled();
+    expect(resetButton).toHaveAttribute('type', 'button');
+  });
+
   it('AC-06: only the five specified elements are present', () => {
     render(<SignInPage />);
 
-    const form = screen.getByRole('form', { name: /sign in form/i });
-    expect(form.querySelectorAll('input')).toHaveLength(4);
+    const form = screen.getByRole('form', { name: /login form/i });
+    expect(form.querySelectorAll('input')).toHaveLength(2);
+    expect(screen.getByRole('button', { name: /^login$/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /reset password/i })).toBeInTheDocument();
     expect(screen.queryAllByRole('link')).toHaveLength(0);
-    expect(screen.queryAllByRole('textbox')).toHaveLength(2);
+    expect(screen.queryAllByRole('textbox')).toHaveLength(1);
   });
 });
