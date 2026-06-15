@@ -1,0 +1,214 @@
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { login } from "../services/authService";
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const LoginPage: React.FC = () => {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+
+  const isFormValid = email.trim() !== "" && password.trim() !== "";
+
+  const validateEmail = (value: string): boolean => {
+    if (!value.trim()) {
+      setEmailError("Email is required.");
+      return false;
+    }
+    if (!EMAIL_REGEX.test(value)) {
+      setEmailError("Please enter a valid email address.");
+      return false;
+    }
+    setEmailError(null);
+    return true;
+  };
+
+  const validatePassword = (value: string): boolean => {
+    if (!value.trim()) {
+      setPasswordError("Password is required.");
+      return false;
+    }
+    setPasswordError(null);
+    return true;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    if (!validateEmail(email) || !validatePassword(password)) return;
+
+    setIsLoading(true);
+    try {
+      const { token } = await login({ email, password });
+      localStorage.setItem("token", token);
+      localStorage.setItem("userEmail", email);
+      navigate("/dashboard");
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        if (err.response?.status === 401) {
+          const msg = err.response.data?.message;
+          setError(
+            typeof msg === "string" ? msg : "Invalid email or password.",
+          );
+        } else if (err.response) {
+          setError("Something went wrong. Please try again later.");
+        } else {
+          setError("Unable to connect. Check your network and try again.");
+        }
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <main className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-md p-8">
+        <h1 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+          Sign in
+        </h1>
+
+        {error && (
+          <div
+            role="alert"
+            className="mb-4 rounded-lg bg-red-50 border border-red-300 px-4 py-3 text-sm text-red-700"
+          >
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} noValidate>
+          {/* Email */}
+          <div className="mb-4">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Email address
+            </label>
+            <input
+              id="email"
+              type="email"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setEmailError(null);
+              }}
+              onBlur={(e) => validateEmail(e.target.value)}
+              aria-required="true"
+              aria-describedby={emailError ? "email-error" : undefined}
+              aria-invalid={emailError ? "true" : "false"}
+              className={`w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                emailError ? "border-red-400" : "border-gray-300"
+              }`}
+              placeholder="you@example.com"
+            />
+            {emailError && (
+              <p
+                id="email-error"
+                role="alert"
+                className="mt-1 text-xs text-red-600"
+              >
+                {emailError}
+              </p>
+            )}
+          </div>
+
+          {/* Password */}
+          <div className="mb-6">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              autoComplete="current-password"
+              aria-required="true"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setPasswordError(null);
+              }}
+              onBlur={(e) => validatePassword(e.target.value)}
+              aria-describedby={passwordError ? "password-error" : undefined}
+              aria-invalid={passwordError ? "true" : "false"}
+              className={`w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                passwordError ? "border-red-400" : "border-gray-300"
+              }`}
+            />
+            {passwordError && (
+              <p
+                id="password-error"
+                role="alert"
+                className="mt-1 text-xs text-red-600"
+              >
+                {passwordError}
+              </p>
+            )}
+          </div>
+
+          <div className="mb-4 flex justify-between items-center">
+            <button
+              type="button"
+              className="text-sm text-indigo-600 hover:text-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded"
+            >
+              Sign Up
+            </button>
+            <button
+              type="button"
+              className="text-sm text-indigo-600 hover:text-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded"
+            >
+              Reset password
+            </button>
+          </div>
+
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={!isFormValid || isLoading}
+            aria-busy={isLoading}
+            className="w-full flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            {isLoading && (
+              <svg
+                className="animate-spin h-4 w-4 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v8H4z"
+                />
+              </svg>
+            )}
+            {isLoading ? "Signing in…" : "Sign in"}
+          </button>
+        </form>
+      </div>
+    </main>
+  );
+};
+
+export default LoginPage;
