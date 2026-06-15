@@ -1,4 +1,8 @@
-export function SignInPage() {
+type SignInPageProps = {
+  onResetPassword?: () => void;
+};
+
+export function SignInPage({ onResetPassword }: SignInPageProps) {
   return (
     <main>
       <h1>Login</h1>
@@ -13,7 +17,7 @@ export function SignInPage() {
         </div>
         <button type="button">Login</button>
         <button type="button">Sign in</button>
-        <button type="button">Reset password</button>
+        <button type="button" onClick={onResetPassword}>Reset password</button>
       </form>
     </main>
   );
