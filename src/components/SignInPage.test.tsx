@@ -60,7 +60,7 @@ describe('SignInPage (MAD-71 login screen)', () => {
     expect(resetButton).toHaveAttribute('type', 'button');
   });
 
-  it('AC-06: only the five specified elements are present', () => {
+  it('AC-06: login form elements remain present with logo branding', () => {
     render(<SignInPage />);
 
     const form = screen.getByRole('form', { name: /login form/i });
@@ -70,6 +70,7 @@ describe('SignInPage (MAD-71 login screen)', () => {
     expect(screen.getByRole('button', { name: /reset password/i })).toBeInTheDocument();
     expect(screen.queryAllByRole('link')).toHaveLength(0);
     expect(screen.queryAllByRole('textbox')).toHaveLength(1);
+    expect(screen.getByRole('img', { name: /globallogic logo/i })).toBeInTheDocument();
   });
 });
 
@@ -81,5 +82,51 @@ describe('MAD-72 — forgot password onclick', () => {
 
     await user.click(screen.getByRole('button', { name: /reset password/i }));
     expect(onResetPassword).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('MBA-24 — GlobalLogic logo centered at top', () => {
+  it('AC-01: logo is visible and horizontally centered at top of login screen', () => {
+    render(<SignInPage />);
+
+    const logo = screen.getByRole('img', { name: /globallogic logo/i });
+    expect(logo).toBeVisible();
+    expect(logo).toHaveAttribute('src');
+
+    const container = logo.parentElement;
+    expect(container).toHaveStyle({ display: 'flex', justifyContent: 'center' });
+  });
+
+  it('AC-02: logo uses the GlobalLogic brand asset', () => {
+    render(<SignInPage />);
+
+    const logo = screen.getByRole('img', { name: /globallogic logo/i });
+    expect(logo.getAttribute('src')).toMatch(/globalogic-logo/i);
+  });
+
+  it('AC-03: login form appears below the logo and remains usable', () => {
+    const { container } = render(<SignInPage />);
+
+    const main = container.querySelector('main');
+    expect(main).not.toBeNull();
+
+    const children = Array.from(main!.children);
+    const logoIndex = children.findIndex((el) => el.querySelector('img[alt="GlobalLogic logo"]'));
+    const headingIndex = children.findIndex((el) => el.tagName === 'H1');
+    const formIndex = children.findIndex((el) => el.getAttribute('aria-label') === 'Login form');
+
+    expect(logoIndex).toBeGreaterThanOrEqual(0);
+    expect(headingIndex).toBeGreaterThan(logoIndex);
+    expect(formIndex).toBeGreaterThan(logoIndex);
+
+    expect(screen.getByLabelText(/username/i)).toBeVisible();
+    expect(screen.getByLabelText(/^password$/i)).toBeVisible();
+    expect(logo).toHaveStyle({ maxWidth: '200px' });
+  });
+
+  it('AC-04: logo has descriptive alt text for assistive technology', () => {
+    render(<SignInPage />);
+
+    expect(screen.getByAltText('GlobalLogic logo')).toBeInTheDocument();
   });
 });
