@@ -5,7 +5,7 @@
  */
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { SignInPage } from './SignInPage';
 
 describe('SignInPage (MAD-71 login screen)', () => {
@@ -70,5 +70,16 @@ describe('SignInPage (MAD-71 login screen)', () => {
     expect(screen.getByRole('button', { name: /reset password/i })).toBeInTheDocument();
     expect(screen.queryAllByRole('link')).toHaveLength(0);
     expect(screen.queryAllByRole('textbox')).toHaveLength(1);
+  });
+});
+
+describe('MAD-72 — forgot password onclick', () => {
+  it('should call onResetPassword when Reset password button is clicked', async () => {
+    const user = userEvent.setup();
+    const onResetPassword = vi.fn();
+    render(<SignInPage onResetPassword={onResetPassword} />);
+
+    await user.click(screen.getByRole('button', { name: /reset password/i }));
+    expect(onResetPassword).toHaveBeenCalledTimes(1);
   });
 });
