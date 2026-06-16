@@ -1,7 +1,9 @@
 /**
  * MAD-71 — Login Screen automated tests
+ * MBA-24 — GlobalLogic logo centered at top
  * Jira: https://globallogic-team-ioe3w3ht.atlassian.net/browse/MAD-71
- * Traceability: AC-01 through AC-05
+ * Jira: https://globallogic-team-ioe3w3ht.atlassian.net/browse/MBA-24
+ * Traceability: MAD-71 AC-01 through AC-06, MBA-24 AC-01 through AC-04
  */
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -129,5 +131,20 @@ describe('MBA-24 — GlobalLogic logo centered at top', () => {
     render(<SignInPage />);
 
     expect(screen.getByAltText('GlobalLogic logo')).toBeInTheDocument();
+  });
+
+  it('MBA-24-REG-01: logo container is the first child inside main', () => {
+    const { container } = render(<SignInPage />);
+    const main = container.querySelector('main');
+    const firstChild = main?.firstElementChild;
+
+    expect(firstChild?.querySelector('img[alt="GlobalLogic logo"]')).toBeInTheDocument();
+  });
+
+  it('MBA-24-EDGE-01: logo scales responsively on mobile viewports', () => {
+    render(<SignInPage />);
+
+    const logo = screen.getByRole('img', { name: /globallogic logo/i });
+    expect(logo).toHaveStyle({ maxWidth: '200px', width: '100%', height: 'auto' });
   });
 });
