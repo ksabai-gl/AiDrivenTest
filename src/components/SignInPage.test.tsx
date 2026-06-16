@@ -119,6 +119,7 @@ describe('MBA-24 — GlobalLogic logo centered at top', () => {
     expect(headingIndex).toBeGreaterThan(logoIndex);
     expect(formIndex).toBeGreaterThan(logoIndex);
 
+    const logo = screen.getByRole('img', { name: /globallogic logo/i });
     expect(screen.getByLabelText(/username/i)).toBeVisible();
     expect(screen.getByLabelText(/^password$/i)).toBeVisible();
     expect(logo).toHaveStyle({ maxWidth: '200px' });
