@@ -133,6 +133,19 @@ describe('MBA-24 — GlobalLogic logo centered at top', () => {
     expect(screen.getByAltText('GlobalLogic logo')).toBeInTheDocument();
   });
 
+  it('MBA-24-TOP-01: GlobalLogic logo is centered at the top of the login screen', () => {
+    const { container } = render(<SignInPage />);
+    const main = container.querySelector('main');
+    const logo = screen.getByRole('img', { name: /globallogic logo/i });
+
+    expect(main?.firstElementChild).toContainElement(logo);
+    expect(logo.parentElement).toHaveStyle({
+      display: 'flex',
+      justifyContent: 'center',
+    });
+    expect(screen.getByRole('heading', { name: /login/i })).toBeVisible();
+  });
+
   it('MBA-24-REG-01: logo container is the first child inside main', () => {
     const { container } = render(<SignInPage />);
     const main = container.querySelector('main');

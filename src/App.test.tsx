@@ -39,6 +39,16 @@ describe('MBA-24 — GlobalLogic logo at App level', () => {
     expect(screen.getByRole('img', { name: /globallogic logo/i })).toBeVisible();
   });
 
+  it('MBA-24-INT-02: centered GlobalLogic logo appears at top when login screen loads', () => {
+    const { container } = render(<App />);
+    const logo = screen.getByRole('img', { name: /globallogic logo/i });
+    const main = container.querySelector('main');
+
+    expect(logo).toBeVisible();
+    expect(main?.firstElementChild).toContainElement(logo);
+    expect(logo.parentElement).toHaveStyle({ justifyContent: 'center' });
+  });
+
   it('MBA-24-REG-02: logo is not shown on the forgot password view', async () => {
     const user = userEvent.setup();
     render(<App />);
