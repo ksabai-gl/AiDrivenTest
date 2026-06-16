@@ -71,6 +71,15 @@ describe('SignInPage (MAD-71 login screen)', () => {
     expect(screen.queryAllByRole('link')).toHaveLength(0);
     expect(screen.queryAllByRole('textbox')).toHaveLength(1);
   });
+
+  it('MBA-25: GlobalLogic brand header is present and centered', () => {
+    render(<SignInPage />);
+
+    const header = screen.getByText(/globallogic/i);
+    expect(header).toBeInTheDocument();
+    expect(header.tagName).toBe('H1');
+    expect(header).toHaveStyle({ textAlign: 'center' });
+  });
 });
 
 describe('MAD-72 — forgot password onclick', () => {
