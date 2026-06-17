@@ -21,4 +21,23 @@ describe('DashboardPage (MBA-28 empty dashboard)', () => {
     expect(container.querySelectorAll('[data-widget]')).toHaveLength(0);
     expect(screen.getByLabelText(/dashboard content/i)).toBeEmptyDOMElement();
   });
+
+  it('AC-D02: exposes a single top-level heading', () => {
+    render(<DashboardPage />);
+
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
+  });
+
+  it('AC-D02: does not render buttons or links', () => {
+    render(<DashboardPage />);
+
+    expect(screen.queryAllByRole('button')).toHaveLength(0);
+    expect(screen.queryAllByRole('link')).toHaveLength(0);
+  });
+
+  it('AC-D02: uses a main landmark for the page shell', () => {
+    render(<DashboardPage />);
+
+    expect(screen.getByRole('main')).toBeVisible();
+  });
 });

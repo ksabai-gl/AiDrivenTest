@@ -40,4 +40,32 @@ describe('MBA-28 — login navigates to dashboard', () => {
     expect(screen.getByRole('heading', { name: /^dashboard$/i })).toBeVisible();
     expect(screen.queryByRole('form', { name: /login form/i })).not.toBeInTheDocument();
   });
+
+  it('AC-D01: Sign in button does not navigate to Dashboard', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByRole('button', { name: /sign in/i }));
+
+    expect(screen.getByRole('form', { name: /login form/i })).toBeVisible();
+    expect(screen.queryByRole('heading', { name: /^dashboard$/i })).not.toBeInTheDocument();
+  });
+
+  it('AC-D01: Login navigates with empty username and password', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByRole('button', { name: /^login$/i }));
+
+    expect(screen.getByRole('heading', { name: /^dashboard$/i })).toBeVisible();
+  });
+
+  it('AC-D02: Dashboard main content area is empty after Login', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByRole('button', { name: /^login$/i }));
+
+    expect(screen.getByLabelText(/dashboard content/i)).toBeEmptyDOMElement();
+  });
 });
