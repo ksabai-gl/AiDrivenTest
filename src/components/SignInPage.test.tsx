@@ -1,5 +1,5 @@
 /**
- * MAD-71 â€” Login Screen automated tests
+ * MAD-71 — Login Screen automated tests
  * Jira: https://globallogic-team-ioe3w3ht.atlassian.net/browse/MAD-71
  * Traceability: AC-01 through AC-05
  */
@@ -73,7 +73,7 @@ describe('SignInPage (MAD-71 login screen)', () => {
   });
 });
 
-describe('MAD-72 â€” forgot password onclick', () => {
+describe('MAD-72 — forgot password onclick', () => {
   it('should call onResetPassword when Reset password button is clicked', async () => {
     const user = userEvent.setup();
     const onResetPassword = vi.fn();
