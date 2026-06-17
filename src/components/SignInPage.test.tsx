@@ -1,5 +1,5 @@
 /**
- * MAD-71 — Login Screen automated tests
+ * MAD-71 â€” Login Screen automated tests
  * Jira: https://globallogic-team-ioe3w3ht.atlassian.net/browse/MAD-71
  * Traceability: AC-01 through AC-05
  */
@@ -73,7 +73,7 @@ describe('SignInPage (MAD-71 login screen)', () => {
   });
 });
 
-describe('MAD-72 — forgot password onclick', () => {
+describe('MAD-72 â€” forgot password onclick', () => {
   it('should call onResetPassword when Reset password button is clicked', async () => {
     const user = userEvent.setup();
     const onResetPassword = vi.fn();
@@ -81,5 +81,35 @@ describe('MAD-72 — forgot password onclick', () => {
 
     await user.click(screen.getByRole('button', { name: /reset password/i }));
     expect(onResetPassword).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('MBA-26 — no GlobalLogic brand header', () => {
+  it('AC-01: sign-in page shows Login as the primary heading', () => {
+    render(<SignInPage />);
+
+    const headings = screen.getAllByRole('heading');
+    expect(headings).toHaveLength(1);
+    expect(headings[0]).toHaveTextContent('Login');
+    expect(headings[0].tagName).toBe('H1');
+  });
+
+  it('AC-02: GlobalLogic brand text is not present', () => {
+    render(<SignInPage />);
+
+    expect(screen.queryByText(/globallogic/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: /globallogic/i })).not.toBeInTheDocument();
+  });
+
+  it('AC-03: login form remains functional without brand header', async () => {
+    const user = userEvent.setup();
+    render(<SignInPage />);
+
+    await user.type(screen.getByLabelText(/username/i), 'testuser');
+    await user.type(screen.getByLabelText(/^password$/i), 'secret123');
+
+    expect(screen.getByRole('button', { name: /^login$/i })).toBeEnabled();
+    expect(screen.getByRole('button', { name: /sign in/i })).toBeEnabled();
+    expect(screen.getByRole('button', { name: /reset password/i })).toBeEnabled();
   });
 });
