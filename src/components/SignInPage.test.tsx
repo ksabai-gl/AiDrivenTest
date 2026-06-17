@@ -1,7 +1,7 @@
 /**
  * MAD-71 — Login Screen automated tests
  * Jira: https://globallogic-team-ioe3w3ht.atlassian.net/browse/MAD-71
- * Traceability: AC-01 through AC-05
+ * Traceability: AC-01 through AC-06
  */
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
