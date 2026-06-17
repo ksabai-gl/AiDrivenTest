@@ -25,3 +25,19 @@ describe('App (MAD-72 view switching)', () => {
     expect(screen.getByRole('heading', { name: /login/i })).toBeVisible();
   });
 });
+
+describe('MBA-28 — login navigates to dashboard', () => {
+  /**
+   * MBA-28 — Login Button Navigates to Dashboard
+   * Jira: https://globallogic-team-ioe3w3ht.atlassian.net/browse/MBA-28
+   */
+  it('AC-D01: should show Dashboard after clicking Login', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByRole('button', { name: /^login$/i }));
+
+    expect(screen.getByRole('heading', { name: /^dashboard$/i })).toBeVisible();
+    expect(screen.queryByRole('form', { name: /login form/i })).not.toBeInTheDocument();
+  });
+});

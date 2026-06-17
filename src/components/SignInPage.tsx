@@ -1,8 +1,9 @@
 type SignInPageProps = {
   onResetPassword?: () => void;
+  onLogin?: () => void;
 };
 
-export function SignInPage({ onResetPassword }: SignInPageProps) {
+export function SignInPage({ onResetPassword, onLogin }: SignInPageProps) {
   return (
     <main>
       <h1 style={{ textAlign: 'center' }}>GlobalLogic</h1>
@@ -16,7 +17,7 @@ export function SignInPage({ onResetPassword }: SignInPageProps) {
           <label htmlFor="password">Password</label>
           <input id="password" name="password" type="password" autoComplete="current-password" />
         </div>
-        <button type="button">Login</button>
+        <button type="button" onClick={onLogin}>Login</button>
         <button type="button">Sign in</button>
         <button type="button" onClick={onResetPassword}>Reset password</button>
       </form>
