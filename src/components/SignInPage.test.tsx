@@ -73,6 +73,26 @@ describe('SignInPage (MAD-71 login screen)', () => {
   });
 });
 
+describe('MBA-26 — no GlobalLogic brand header', () => {
+  /**
+   * MBA-26 — Remove GlobalLogic header from sign-in screen
+   * Jira: https://globallogic-team-ioe3w3ht.atlassian.net/browse/MBA-26
+   */
+  it('MBA-26: sign-in page keeps Login as the only h1 heading', () => {
+    render(<SignInPage />);
+
+    expect(screen.getByRole('heading', { level: 1, name: /^login$/i })).toBeVisible();
+    expect(screen.queryByText(/globallogic/i)).not.toBeInTheDocument();
+  });
+
+  it('MBA-26: rendered output does not include GlobalLogic branding text', () => {
+    const { container } = render(<SignInPage />);
+
+    expect(container.textContent || '').not.toMatch(/globallogic/i);
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
+  });
+});
+
 describe('MAD-72 — forgot password onclick', () => {
   it('should call onResetPassword when Reset password button is clicked', async () => {
     const user = userEvent.setup();
