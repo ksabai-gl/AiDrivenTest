@@ -103,3 +103,36 @@ describe('MAD-72 — forgot password onclick', () => {
     expect(onResetPassword).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('MBA-28 — login onclick', () => {
+  /**
+   * MBA-28 — Login Button Navigates to Dashboard
+   * Jira: https://globallogic-team-ioe3w3ht.atlassian.net/browse/MBA-28
+   */
+  it('AC-D01: should call onLogin when Login button is clicked', async () => {
+    const user = userEvent.setup();
+    const onLogin = vi.fn();
+    render(<SignInPage onLogin={onLogin} />);
+
+    await user.click(screen.getByRole('button', { name: /^login$/i }));
+    expect(onLogin).toHaveBeenCalledTimes(1);
+  });
+
+  it('AC-D01: Sign in button does not invoke onLogin', async () => {
+    const user = userEvent.setup();
+    const onLogin = vi.fn();
+    render(<SignInPage onLogin={onLogin} />);
+
+    await user.click(screen.getByRole('button', { name: /sign in/i }));
+    expect(onLogin).not.toHaveBeenCalled();
+  });
+
+  it('AC-D01: Login click is safe when onLogin is omitted', async () => {
+    const user = userEvent.setup();
+    render(<SignInPage />);
+
+    await expect(
+      user.click(screen.getByRole('button', { name: /^login$/i })),
+    ).resolves.not.toThrow();
+  });
+});
