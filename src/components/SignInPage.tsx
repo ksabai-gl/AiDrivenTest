@@ -5,7 +5,8 @@ type SignInPageProps = {
 export function SignInPage({ onResetPassword }: SignInPageProps) {
   return (
     <main>
-      <h1>Login</h1>
+      <h1 style={{ textAlign: 'center' }}>GlobalLogic</h1>
+      <h2>Login</h2>
       <form aria-label="Login form">
         <div>
           <label htmlFor="username">Username</label>
