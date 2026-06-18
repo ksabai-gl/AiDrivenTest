@@ -1,0 +1,99 @@
+[data-theme="light-theme"] {
+    --erp-bg: #f8fafc;
+    --erp-text: #0f172a;
+    --erp-text-muted: #6a6b6e;
+    --erp-text-highlight: #020617;
+
+    --erp-topbar-bg: #ffffff;
+    --erp-sidebar-bg: #ffffff;
+
+    --erp-link: #64748b;
+    --erp-link-hover: #0f172a;
+
+    --body: #ffffff;
+    --border-color: #e2e8f0;
+
+    --erp-gradient: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+}
+
+[data-theme="dark-theme"] {
+    --erp-bg: #0f172a;
+    --erp-text: #cbd5e1;
+    --erp-text-muted: #d2d5d8;
+    --erp-text-highlight: #ffffff;
+
+    --erp-topbar-bg: #111827;
+    --erp-sidebar-bg: #111827;
+
+    --erp-link: #94a3b8;
+    --erp-link-hover: #ffffff;
+
+    --body: #020617;
+    --border-color: #1e293b;
+
+    --erp-gradient: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);
+}
+body,.label, h1, h2, h3, h4, h5, h6 {
+    color: var(--erp-text)!important;
+}
+.form-control,.form-control:focus,.form-select,input::placeholder,input:focus::placeholder,textarea:focus::placeholder,textarea::placeholder {
+    color: var(--erp-text)!important;
+    background-color: var(--erp-bg)!important;
+}
+.theme-title,.fw-semibold {
+    color: var(--erp-text)!important;
+}
+.custom-text-muted {
+    color: var(--erp-text-muted)!important;
+}
+.theme-title-highlight {
+    color: var(--erp-text-highlight)!important;
+} 
+.theme-bg,.modal-content {
+    background-color: var(--erp-bg)!important;
+}
+.table, .table th, .table td, .theme-sidebar-bg, .theme-card, .pagination, .pagination a {
+    background-color: var(--erp-sidebar-bg)!important;
+    color: var(--erp-text-highlight)!important;
+}
+.theme-sidebar-bg, .theme-border {
+    border: 1px solid var(--border-color)!important;
+}
+#warehouse-tabs .nav-link.active,
+#stock .nav-link.active{
+    background: var(--erp-gradient);
+}
+.is-invalid {
+    border: 1px solid var(--bs-form-invalid-border-color);
+    border-radius: 7px;
+}
+.badge-pending,.badge-draft,.badge-pending, .badge-other,.badge-individual,.badge-default {
+    background-color: var(--bs-secondary)!important;
+}
+.badge-cancelled, .badge-cod, .badge-delete,.badge-inactive {
+    background-color: var(--bs-danger)!important;
+}
+.badge-approved,.badge-received,.badge-completed,
+    .badge-paid, .badge-bank, .badge-create, .badge-creatordershipping,
+    .badge-summary, .badge-active,.badge-admin, .badge-wholesale {
+    background-color: var(--bs-success)!important;
+}
+.badge-requested,.badge-shipped, .badge-cash, .badge-update,.badge-company {
+    background-color: var(--bs-warning)!important;
+    color: var(--bs-gray-900)!important;
+}
+.badge-unapproved,.badge-partial_payment,.badge-retail {
+    background-color: var(--bs-primary)!important;
+}
+.ml-2 {
+    margin-left: .5rem!important;
+}
+/**
+ Extension 
+**/
+.extension-item {
+    height: 420px;
+}
+.custom-text-muted {
+    --bs-text-opacity: 1;
+}
