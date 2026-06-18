@@ -1,0 +1,6 @@
+.badge-New {
+    background-color: var(--bs-success);
+}
+.badge-Renew {
+    background-color: var(--bs-primary);
+}

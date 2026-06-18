@@ -1,0 +1,25 @@
+<?php 
+return [
+    "print" => "印刷",
+    "title" => "請求書受入",
+    "footer" => "これはコンピュータで生成された請求書です。署名は必要ありません。",
+    "document_no" => "文書番号",
+    "invoice_date" => "請求日",
+    "due_date" => "支払期限",
+    "payment" => "支払い",
+    "amount_paid" => "支払金額",
+    "payment_status" => "支払状況",
+    "name" => "名前",
+    "buy" => "購入",
+    "gift" => "ギフト",
+    "compensation" => "補償",
+    "conversion" => "変換",
+    "unit_cost" => "単価",
+    "amount" => "金額",
+    "tax" => "税",
+    "note" => "メモ",
+    "subtotal" => "小計",
+    "shipping_fee" => "送料",
+    "total" => "合計",
+    "due_date" => "期日"
+];

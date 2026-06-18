@@ -1,0 +1,11 @@
+{
+    "name": "Purchase information",
+    "version": "0.1.0",
+    "description": "Support custom field for purchase information",
+    "status" : true,
+    "verified" : true,
+    "author": "LiteERP",
+    "icon" : null,
+    "setting_link" : null,
+    "directory":"PurchaseInformation"
+}

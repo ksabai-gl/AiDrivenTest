@@ -1,0 +1,11 @@
+{
+    "name": "Stock in extras",
+    "version": "0.1.0",
+    "description": "Support custom field for stock in",
+    "status" : true,
+    "verified" : true,
+    "author": "LiteERP",
+    "icon" : null,
+    "setting_link" : null,
+    "directory":"StockinExtras"
+}

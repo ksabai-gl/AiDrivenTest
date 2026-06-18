@@ -1,0 +1,11 @@
+{
+    "directory": "SupplierFax",
+    "name": "Supplier Fax",
+    "version": "0.1.0",
+    "description": "Support fax for supplier",
+    "verified" : true,
+    "status": true,
+    "author": "LiteERP",
+    "icon" : null,
+    "setting_link" : null
+}

@@ -1,0 +1,11 @@
+{
+    "name": "Custom business role",
+    "version": "0.1.0",
+    "description": "Custom role for business",
+    "status" : true,
+    "verified" : true,
+    "author": "LiteERP",
+    "icon" : null,
+    "setting_link" : null,
+    "directory":"CustomBusinessRole"
+}

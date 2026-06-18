@@ -1,0 +1,93 @@
+x-app-build: &app-build
+  build:
+    context: ./
+    dockerfile: './Dockerfile.server'
+    args:
+      UID: ${UID:-1000}
+      GID: ${GID:-1000}
+
+services:
+  app:
+    <<: *app-build
+    user: "${UID}:${GID}"
+    mem_limit: 2048m
+    mem_reservation: 512M
+    container_name: '${APP_NAME}-app'
+    restart: 'always'
+    ports:
+      - ${APP_PORT}:80
+    links: 
+      - db
+      - redis
+    volumes:
+      - ./app:/var/www/html
+      - ./docker-config:/etc/apache2/sites-enabled
+      - ./docker-config/php/php.ini:/usr/local/etc/php/conf.d/custom.ini
+  db:
+    mem_limit: 1024m
+    mem_reservation: 128M
+    build:
+      context: "./"
+      dockerfile: 'Dockerfile.db'
+    container_name: '${APP_NAME}-mysql'
+    restart: 'always'
+    ports:
+      - ${DATABASE_PORT}:3306
+    volumes: 
+      #- ./docker/data/mysql:/var/lib/mysql
+      - ./docker/logs/mysql:/var/log/mysql
+      - ./docker-config/database/custom.cnf:/etc/mysql/conf.d/custom.cnf:ro
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    mem_limit: 64m
+    restart: 'always'
+    mem_reservation: 32M
+    container_name: '${APP_NAME}-phpmyadmin'
+    links:
+      - db
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 1000000
+    ports:
+      - ${PHPMYADMIN_PORT}:80
+  redis:
+    container_name: '${APP_NAME}-redis'
+    image: redis:8.4.0
+    restart: 'always'
+    mem_limit: 64m
+    mem_reservation: 32M
+    ports:
+      - ${REDIS_PORT}:6379
+  scheduler:
+    <<: *app-build
+    user: "${UID}:${GID}"
+    container_name: '${APP_NAME}-scheduler'
+    mem_limit: 256m
+    mem_reservation: 64M
+    command: >
+      sh -c "
+      while [ ! -f storage/app/private/erp.installed ]; do
+        echo 'Waiting for ERP installation...';
+      done;
+      sleep 30;
+      echo 'Start schedule';
+      php artisan schedule:work
+      "
+    restart: unless-stopped
+    depends_on:
+      - app
+      - db
+      - redis
+    links: 
+      - db
+      - redis
+    volumes:
+      - ./app:/var/www/html
+      - ./docker-config:/etc/apache2/sites-enabled
+      - ./docker-config/php/php.ini:/usr/local/etc/php/conf.d/custom.ini

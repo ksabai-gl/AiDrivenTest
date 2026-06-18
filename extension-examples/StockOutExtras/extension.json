@@ -1,0 +1,11 @@
+{
+    "name": "Stock out extra",
+    "version": "0.1.0",
+    "description": "Support custom field stock out extra",
+    "status" : true,
+    "verified" : true,
+    "author": "LiteERP",
+    "icon" : null,
+    "setting_link" : null,
+    "directory":"StockOutExtras"
+}

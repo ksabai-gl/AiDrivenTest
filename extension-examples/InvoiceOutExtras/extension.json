@@ -1,0 +1,11 @@
+{
+    "name": "Invoice out extras",
+    "version": "0.1.0",
+    "description": "Support custom field for invoice out",
+    "status" : true,
+    "verified" : true,
+    "author": "LiteERP",
+    "icon" : null,
+    "setting_link" : null,
+    "directory":"InvoiceOutExtras"
+}

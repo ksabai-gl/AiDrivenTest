@@ -1,0 +1,18 @@
+{
+    "directory": "Debt",
+    "name": "Debt",
+    "version": "0.0.1",
+    "description": "Debt extension for LiteERP",
+    "verified": true,
+    "status": true,
+    "author": "LiteERP team",
+    "icon": null,
+    "installer": {
+        "app:npmbuild": "Build frontend assets",
+        "migrate": "Create table archive data"
+    },
+    "uninstaller": {
+        "app:npmbuild": "Build frontend assets",
+        "migrate": "Delete table archive data"
+    }
+}

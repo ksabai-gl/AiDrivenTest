@@ -1,0 +1,25 @@
+<?php 
+return [
+    "print" => "In",
+    "title" => "HÓA ĐƠN NHẬP",
+    "footer" => "Đây là hóa đơn được tạo bởi máy tính. Không cần chữ ký.",
+    "document_no" => "Số tài liệu",
+    "invoice_date" => "Ngày hóa đơn",
+    "due_date" => "Ngày đáo hạn",
+    "payment" => "Thanh toán",
+    "amount_paid" => "Số tiền đã trả",
+    "payment_status" => "Trạng thái thanh toán",
+    "name" => "Tên",
+    "buy" => "Mua",
+    "gift" => "Quà",
+    "compensation" => "Bồi thường",
+    "conversion" => "Chuyển đổi",
+    "unit_cost" => "Đơn giá",
+    "amount" => "Số lượng",
+    "tax" => "Thuế",
+    "note" => "Ghi chú",
+    "subtotal" => "Tổng phụ",
+    "shipping_fee" => "Phí vận chuyển",
+    "total" => "Tổng cộng",
+    "due_date" => "Ngày đến hạn"
+];

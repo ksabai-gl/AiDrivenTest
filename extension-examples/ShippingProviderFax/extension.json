@@ -1,0 +1,11 @@
+{
+    "name": "Shipping Provider Fax",
+    "version": "0.1.0",
+    "description": "Support fax for shipping providers",
+    "status": true,
+    "verified" : true,
+    "author": "LiteERP",
+    "icon" : null,
+    "setting_link" : null,
+    "directory":"ShippingProviderFax"
+}

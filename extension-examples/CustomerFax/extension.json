@@ -1,0 +1,11 @@
+{
+    "name": "Customer fax",
+    "version": "0.1.0",
+    "description": "Support fax for customer",
+    "status" : true,
+    "verified" : true,
+    "author": "LiteERP",
+    "icon" : null,
+    "setting_link" : null,
+    "directory":"CustomerFax"
+}

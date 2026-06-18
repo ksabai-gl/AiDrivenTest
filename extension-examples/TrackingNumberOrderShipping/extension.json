@@ -1,0 +1,11 @@
+{
+    "name": "Tracking Number Shipping",
+    "version": "0.1.0",
+    "description": "Support tracking number for shipping",
+    "status" : true,
+    "verified" : true,
+    "author": "LiteERP",
+    "icon" : null,
+    "setting_link" : null,
+    "directory":"TrackingNumberOrderShipping"
+}

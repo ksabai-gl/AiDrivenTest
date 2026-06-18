@@ -1,0 +1,18 @@
+{
+    "directory": "Hrm",
+    "name": "HRM",
+    "version": "0.0.1",
+    "description": "Human Resource Management extension for LiteERP",
+    "verified": true,
+    "status": true,
+    "author": "LiteERP team",
+    "icon": null,
+    "installer": {
+        "app:npmbuild": "Build frontend assets",
+        "migrate": "Create HRM tables"
+    },
+    "uninstaller": {
+        "app:npmbuild": "Build frontend assets",
+        "migrate": "Delete HRM tables"
+    }
+}

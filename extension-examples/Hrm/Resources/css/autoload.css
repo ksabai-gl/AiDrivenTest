@@ -1,0 +1,6 @@
+.badge-rejected {
+    background-color: var(--bs-red);
+}
+.badge-pending {
+    background-color: var(--bs-secondary); 
+}

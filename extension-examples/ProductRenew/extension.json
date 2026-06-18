@@ -1,0 +1,11 @@
+{
+    "name": "Product renew",
+    "version": "0.1.0",
+    "description": "Support renew option for product",
+    "status" : true,
+    "verified" : true,
+    "author": "LiteERP",
+    "icon" : null,
+    "setting_link" : null,
+    "directory":"ProductRenew"
+}
