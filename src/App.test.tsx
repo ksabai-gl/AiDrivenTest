@@ -39,4 +39,16 @@ describe('App — login navigation (MBA-21 / AC-D01)', () => {
       screen.getByRole('heading', { level: 1, name: /sign in/i })
     ).toBeInTheDocument();
   });
+
+  it('redirects unknown paths to the login screen', () => {
+    render(
+      <MemoryRouter initialEntries={['/settings/profile']}>
+        <App />
+      </MemoryRouter>
+    );
+
+    expect(
+      screen.getByRole('heading', { level: 1, name: /sign in/i })
+    ).toBeInTheDocument();
+  });
 });
