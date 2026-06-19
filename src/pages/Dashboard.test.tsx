@@ -2,7 +2,7 @@ import { render, screen, within } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import Dashboard from './Dashboard';
 
-describe('Dashboard — GlobalLogic header (MAD-74)', () => {
+describe('Dashboard \u2014 GlobalLogic header (MAD-74)', () => {
   it('renders the GlobalLogic brand name in the header', () => {
     render(<Dashboard />);
     const header = screen.getByRole('banner');
@@ -33,18 +33,46 @@ describe('Dashboard — GlobalLogic header (MAD-74)', () => {
     ).toBeInTheDocument();
   });
 
-  it('REGRESSION: still renders the placeholder welcome content', () => {
-    render(<Dashboard />);
-    expect(screen.getByLabelText('Dashboard content')).toBeInTheDocument();
-    expect(
-      screen.getByText(/Your account overview will appear here/i)
-    ).toBeInTheDocument();
-  });
-
   it('REGRESSION: brand badge does not pollute the accessible heading name', () => {
     render(<Dashboard />);
     const heading = screen.getByRole('heading', { level: 1 });
     expect(heading).toHaveTextContent('Dashboard');
     expect(heading).not.toHaveTextContent('GlobalLogic');
+  });
+});
+
+describe('Dashboard \u2014 post-login content (MBA-29)', () => {
+  it('renders account content instead of an empty placeholder', () => {
+    render(<Dashboard />);
+    const content = screen.getByLabelText('Dashboard content');
+    expect(content).toBeInTheDocument();
+    expect(
+      within(content).getByRole('heading', { name: /Accounts/i })
+    ).toBeInTheDocument();
+    expect(within(content).getByText('Everyday Checking')).toBeInTheDocument();
+    expect(within(content).getByText('Savings')).toBeInTheDocument();
+  });
+
+  it('renders a total balance summary', () => {
+    render(<Dashboard />);
+    const summary = screen.getByLabelText('Total balance');
+    expect(summary).toBeInTheDocument();
+    expect(within(summary).getByText(/Total balance/i)).toBeInTheDocument();
+  });
+
+  it('renders recent transactions', () => {
+    render(<Dashboard />);
+    expect(
+      screen.getByRole('heading', { name: /Recent transactions/i })
+    ).toBeInTheDocument();
+    expect(screen.getByText('Payroll Deposit')).toBeInTheDocument();
+  });
+
+  it('renders quick action controls', () => {
+    render(<Dashboard />);
+    const actions = screen.getByLabelText('Quick actions');
+    expect(within(actions).getByRole('button', { name: 'Transfer' })).toBeInTheDocument();
+    expect(within(actions).getByRole('button', { name: 'Pay bills' })).toBeInTheDocument();
+    expect(within(actions).getByRole('button', { name: 'Statements' })).toBeInTheDocument();
   });
 });
