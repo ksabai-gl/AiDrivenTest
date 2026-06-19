@@ -1,0 +1,230 @@
+{
+  "field_summary": {
+    "total_fields": 18,
+    "mandatory_fields": 5,
+    "default_fields": 3,
+    "notes": "Counts inferred from DeclarantBS.cls and DeclarantBE.cls; dsDeclarant.i not in workspace"
+  },
+  "field_validations": {
+    "general": [
+      {
+        "field": "dsDeclarant",
+        "description": "QRA entity metadata validation via GetEntityMetadataService:IsValid for qad.logistics/Declarants",
+        "line_hint": "DeclarantBE.cls:148-151",
+        "severity": "high"
+      },
+      {
+        "field": "DeclarantAddressCode",
+        "description": "Must be valid company address (MFG_ADDRTYPE_COMPANY)",
+        "line_hint": "DeclarantBE.cls:176-183",
+        "severity": "high"
+      },
+      {
+        "field": "CountryCode",
+        "description": "Must be active country and EC member country",
+        "line_hint": "DeclarantBE.cls:186-200",
+        "severity": "high"
+      },
+      {
+        "field": "DeclarationRegion",
+        "description": "Must exist in generalized codes (ieh_region)",
+        "line_hint": "DeclarantBE.cls:225-232",
+        "severity": "medium"
+      }
+    ],
+    "mandatory": [
+      {
+        "field": "DomainCode",
+        "description": "Validated as active domain via AppCache:IsValidActiveDomain",
+        "line_hint": "DeclarantBE.cls:168-173",
+        "severity": "high"
+      },
+      {
+        "field": "DeclarantAddressCode",
+        "description": "PK field; duplicate check on CREATE via declarantDA:Exists",
+        "line_hint": "DeclarantBE.cls:158-166",
+        "severity": "high"
+      },
+      {
+        "field": "DataOperation",
+        "description": "Set to CREATE/UPDATE/DELETE by BS before validation",
+        "line_hint": "DeclarantBS.cls:77,144,239",
+        "severity": "medium"
+      }
+    ],
+    "default": [
+      {
+        "field": "DomainCode",
+        "description": "Pre-defaulted from BaseUtils:GetSessionDomain() on Initialize",
+        "line_hint": "DeclarantBE.cls:72-80",
+        "severity": "low"
+      },
+      {
+        "field": "VATRegistrationType",
+        "description": "INITIAL LogisticsConstants:DECLARANT_VAT_BILL-TO on Initialize",
+        "line_hint": "DeclarantBE.cls:81",
+        "severity": "low"
+      },
+      {
+        "field": "IsVATRegistrationNumber",
+        "description": "Derived in AssignDefaults from VATRegistrationType (SHIP-TO = true)",
+        "line_hint": "DeclarantBE.cls:363-367",
+        "severity": "low"
+      }
+    ]
+  },
+  "validation_classifications": {
+    "input": [
+      {
+        "field": "AgentCode",
+        "description": "Validated only when BaseUtils:HasValue — address must exist",
+        "line_hint": "DeclarantBE.cls:203-212",
+        "validation_type": "conditional_presence"
+      },
+      {
+        "field": "CurrencyCode",
+        "description": "Validated only when HasValue — must be active currency",
+        "line_hint": "DeclarantBE.cls:215-222",
+        "validation_type": "conditional_presence"
+      }
+    ],
+    "business": [
+      {
+        "field": "CountryCode",
+        "description": "Must be EC country per CountryService:IsECCountry",
+        "line_hint": "DeclarantBE.cls:195-200",
+        "validation_type": "domain_rule"
+      },
+      {
+        "field": "VATRegistrationType",
+        "description": "Drives IsVATRegistrationNumber derivation (BILL-TO vs SHIP-TO)",
+        "line_hint": "DeclarantBE.cls:363-367",
+        "validation_type": "derived_field"
+      },
+      {
+        "field": "CountryCode",
+        "description": "UPDATE warns if site addresses have different country than declarant",
+        "line_hint": "DeclarantBE.cls:274-277",
+        "validation_type": "cross_entity_warning"
+      }
+    ],
+    "database": [
+      {
+        "field": "DeclarantAddressCode",
+        "description": "CREATE blocked if declarantDA:Exists returns true",
+        "line_hint": "DeclarantBE.cls:158-166",
+        "validation_type": "uniqueness"
+      },
+      {
+        "field": "DeclarantAddressCode",
+        "description": "UPDATE/DELETE requires existing record; RECORD_DOES_NOT_EXIST if fetch fails",
+        "line_hint": "DeclarantBS.cls:173-175,241-243",
+        "validation_type": "existence"
+      }
+    ],
+    "conditional": [
+      {
+        "field": "ConcurrencyHash",
+        "description": "When empty or replacement required, BS re-fetches initial record before merge",
+        "line_hint": "DeclarantBS.cls:147-177",
+        "validation_type": "optimistic_locking"
+      },
+      {
+        "field": "AgentCode",
+        "description": "Required validation only when field has value",
+        "line_hint": "DeclarantBE.cls:203",
+        "validation_type": "has_value_guard"
+      },
+      {
+        "field": "CurrencyCode",
+        "description": "Required validation only when field has value",
+        "line_hint": "DeclarantBE.cls:215",
+        "validation_type": "has_value_guard"
+      }
+    ]
+  },
+  "issues": [
+    {
+      "description": "dsDeclarant.i include file missing from workspace — field inventory incomplete",
+      "severity": "high",
+      "line_hint": "DeclarantBS.cls:29-30, DeclarantBE.cls:37"
+    },
+    {
+      "description": "N+1 FetchObject calls inside FOR EACH ttDeclarant on UPDATE and DELETE",
+      "severity": "medium",
+      "line_hint": "DeclarantBS.cls:147-179,226-245"
+    },
+    {
+      "description": "Duplicated transaction start/commit/rollback/catch boilerplate across Create, Update, Delete",
+      "severity": "medium",
+      "line_hint": "DeclarantBS.cls:86-107,186-207,250-271"
+    },
+    {
+      "description": "IsValid early return uses return valMsgs:IsEmpty() when not empty — obfuscated logic",
+      "severity": "medium",
+      "line_hint": "DeclarantBE.cls:153-154"
+    },
+    {
+      "description": "IsValidForDelete has no validations — potential referential integrity gap",
+      "severity": "medium",
+      "line_hint": "DeclarantBE.cls:300-308"
+    },
+    {
+      "description": "ReadOnlyFields + CountryCode string concatenation may duplicate CountryCode entry",
+      "severity": "medium",
+      "line_hint": "DeclarantBS.cls:169-171"
+    },
+    {
+      "description": "find first ttInitialDeclarant without AVAILABLE check before CopyBufferReplaceUnknowns in Create",
+      "severity": "low",
+      "line_hint": "DeclarantBS.cls:65-75"
+    },
+    {
+      "description": "datasetHandle from SiteService:FetchList not explicitly deleted",
+      "severity": "low",
+      "line_hint": "DeclarantBE.cls:248-290"
+    },
+    {
+      "description": "Five sequential GetFieldDescription calls per row in FetchObject",
+      "severity": "low",
+      "line_hint": "DeclarantBE.cls:97-124"
+    },
+    {
+      "description": "LeaveAsUnknownList hard-codes custom date field names",
+      "severity": "low",
+      "line_hint": "DeclarantBS.cls:36-39"
+    }
+  ],
+  "recommendations": [
+    {
+      "description": "Add dsDeclarant.i to analysis scope for complete field-level report",
+      "severity": "high"
+    },
+    {
+      "description": "Extract private RunInTransaction method in DeclarantBS to DRY transaction handling",
+      "severity": "medium"
+    },
+    {
+      "description": "Implement batch fetch for multi-row UPDATE/DELETE operations",
+      "severity": "medium"
+    },
+    {
+      "description": "Add referential integrity checks to IsValidForDelete (site usage, open declarations)",
+      "severity": "medium"
+    },
+    {
+      "description": "Replace return valMsgs:IsEmpty() with explicit return false in IsValid metadata failure path",
+      "severity": "low"
+    },
+    {
+      "description": "Add AVAILABLE guard after find first ttInitialDeclarant in Create",
+      "severity": "low"
+    }
+  ],
+  "files_analyzed": [
+    "dev/DeclarantBS.cls",
+    "dev/DeclarantBE.cls"
+  ],
+  "run_id": "20260619T152836_cwy6z1",
+  "agent": "progress-code-analyser-agent"
+}
