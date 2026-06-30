@@ -37,10 +37,38 @@ body {
   font-size: 1.5rem;
 }
 
+.card__subtitle {
+  margin: -12px 0 24px;
+  font-size: 0.95rem;
+  color: #5a6072;
+}
+
 .form {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.form__footer {
+  margin: 0;
+  text-align: center;
+}
+
+.form__link {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #3a6ff7;
+  text-decoration: none;
+}
+
+.form__link:hover {
+  text-decoration: underline;
+}
+
+.form__link:focus-visible {
+  outline: 2px solid #3a6ff7;
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 .field {
@@ -77,6 +105,9 @@ body {
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  display: inline-block;
 }
 
 .button:hover {
@@ -86,6 +117,15 @@ body {
 .button:focus-visible {
   outline: 2px solid #1a1a2e;
   outline-offset: 2px;
+}
+
+.button--secondary {
+  color: #3a6ff7;
+  background: #eef3ff;
+}
+
+.button--secondary:hover {
+  background: #dce6ff;
 }
 
 .dashboard__header {
