@@ -1,5 +1,5 @@
 import { FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -36,6 +36,11 @@ export default function Login() {
               placeholder="Enter password"
             />
           </label>
+          <p className="form__footer">
+            <Link to="/forgot-password" className="form__link">
+              Forgot password?
+            </Link>
+          </p>
           <button className="button" type="submit">
             Login
           </button>
