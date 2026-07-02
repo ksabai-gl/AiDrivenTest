@@ -88,11 +88,27 @@ body {
   outline-offset: 2px;
 }
 
+.button--secondary {
+  margin-top: 0;
+  color: #3a6ff7;
+  background: transparent;
+  border: 1px solid #3a6ff7;
+}
+
+.button--secondary:hover {
+  background: #eef4ff;
+}
+
 .dashboard__header {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 16px;
   margin-bottom: 16px;
+}
+
+.dashboard__actions {
+  margin-left: auto;
 }
 
 .brand {
