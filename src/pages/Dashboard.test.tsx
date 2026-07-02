@@ -66,4 +66,26 @@ describe('Dashboard - logout removed (MBA-38)', () => {
     renderDashboardWithRouter();
     expect(screen.queryByRole('button', { name: /log out/i })).not.toBeInTheDocument();
   });
+
+  it('does not render a sign-out link on the dashboard', () => {
+    renderDashboardWithRouter();
+    expect(screen.queryByRole('link', { name: /sign out/i })).not.toBeInTheDocument();
+  });
+
+  it('does not display logout-related text anywhere on the dashboard', () => {
+    renderDashboardWithRouter();
+    expect(screen.queryByText(/log\s*out/i)).not.toBeInTheDocument();
+  });
+
+  it('does not render the removed dashboard__actions container', () => {
+    const { container } = renderDashboardWithRouter();
+    expect(container.querySelector('.dashboard__actions')).not.toBeInTheDocument();
+  });
+
+  it('still renders header branding and title after logout removal', () => {
+    renderDashboardWithRouter();
+    expect(screen.getByRole('banner')).toBeInTheDocument();
+    expect(screen.getByText('GlobalLogic')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: 'Dashboard' })).toBeInTheDocument();
+  });
 });
