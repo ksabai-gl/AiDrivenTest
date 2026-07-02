@@ -1,5 +1,4 @@
 import { render, screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { describe, it, expect } from 'vitest';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import Dashboard from './Dashboard';
@@ -15,7 +14,7 @@ function renderDashboardWithRouter(initialPath = '/dashboard') {
   );
 }
 
-describe('Dashboard — GlobalLogic header (MAD-74)', () => {
+describe('Dashboard - GlobalLogic header (MAD-74)', () => {
   it('renders the GlobalLogic brand name in the header', () => {
     renderDashboardWithRouter();
     const header = screen.getByRole('banner');
@@ -62,16 +61,31 @@ describe('Dashboard — GlobalLogic header (MAD-74)', () => {
   });
 });
 
-describe('Dashboard — logout (MAD-95)', () => {
-  it('renders a Log out button in the dashboard header', () => {
+describe('Dashboard - logout removed (MBA-38)', () => {
+  it('does not render a Log out button on the dashboard', () => {
     renderDashboardWithRouter();
-    expect(screen.getByRole('button', { name: /log out/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /log out/i })).not.toBeInTheDocument();
   });
 
-  it('navigates to /login when Log out is clicked', async () => {
-    const user = userEvent.setup();
+  it('does not render a sign-out link on the dashboard', () => {
     renderDashboardWithRouter();
-    await user.click(screen.getByRole('button', { name: /log out/i }));
-    expect(screen.getByText('Sign in')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /sign out/i })).not.toBeInTheDocument();
+  });
+
+  it('does not display logout-related text anywhere on the dashboard', () => {
+    renderDashboardWithRouter();
+    expect(screen.queryByText(/log\s*out/i)).not.toBeInTheDocument();
+  });
+
+  it('does not render the removed dashboard__actions container', () => {
+    const { container } = renderDashboardWithRouter();
+    expect(container.querySelector('.dashboard__actions')).not.toBeInTheDocument();
+  });
+
+  it('still renders header branding and title after logout removal', () => {
+    renderDashboardWithRouter();
+    expect(screen.getByRole('banner')).toBeInTheDocument();
+    expect(screen.getByText('GlobalLogic')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: 'Dashboard' })).toBeInTheDocument();
   });
 });
