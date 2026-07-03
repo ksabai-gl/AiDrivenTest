@@ -11,7 +11,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json-summary'],
-      include: ['src/pages/Dashboard.tsx'],
+      include: ['src/pages/Dashboard.tsx', 'src/components/GlobalLogicLogo.tsx'],
     },
   },
 });
