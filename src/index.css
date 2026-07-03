@@ -123,11 +123,6 @@ body {
   justify-content: center;
   width: 32px;
   height: 32px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #ffffff;
-  background: #3a6ff7;
-  border-radius: 8px;
 }
 
 .brand__name {
