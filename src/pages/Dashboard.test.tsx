@@ -21,11 +21,12 @@ describe('Dashboard - GlobalLogic header (MAD-74)', () => {
     expect(within(header).getByText('GlobalLogic')).toBeInTheDocument();
   });
 
-  it('renders the GL logo badge marked as decorative (aria-hidden)', () => {
+  it('renders an inline SVG logo instead of GL text badge', () => {
     const { container } = renderDashboardWithRouter();
     const logo = container.querySelector('.brand__logo');
     expect(logo).toBeInTheDocument();
-    expect(logo).toHaveTextContent('GL');
+    expect(logo?.querySelector('svg')).toBeInTheDocument();
+    expect(logo).not.toHaveTextContent('GL');
     expect(logo).toHaveAttribute('aria-hidden', 'true');
   });
 
