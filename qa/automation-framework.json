@@ -1,0 +1,23 @@
+{
+  "profileId": "java-selenium-cucumber",
+  "label": "Java + Selenium + Cucumber (BDD)",
+  "language": "Java",
+  "issueKey": "MAD-97",
+  "testRoots": ["src/test/java", "src/test/resources/features"],
+  "runCommand": "mvn test -Dcucumber.filter.tags=@regression",
+  "smokeCommand": "mvn test -Dcucumber.filter.tags=@smoke",
+  "ciCommand": "mvn verify",
+  "locatorStrategy": "xpath",
+  "seleniumLocator": {
+    "primary": "xpath",
+    "forbidden": ["cssSelector", "css"]
+  },
+  "forbiddenRunners": ["vitest", "jest", "npm test", "npx vitest", "npx jest"],
+  "environment": {
+    "baseUrl": "http://localhost:5173",
+    "baseUrlProperty": "app.base.url",
+    "prerequisite": "npm run dev (Vite) must be running before mvn test"
+  },
+  "confirmedBy": "Business Process Validation framework gate — user confirmed Cucumber",
+  "confirmedAt": "2026-07-03T11:25:00+05:30"
+}
