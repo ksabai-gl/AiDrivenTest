@@ -11,30 +11,41 @@ public class LoginPage {
   private static final String PASSWORD = "//input[@name='password' or @type='password']";
   private static final String SUBMIT = "//button[@type='submit' and normalize-space()='Login']";
 
-  private final WebDriver driver;
-
-  public LoginPage() {
-    this.driver = TestContext.getDriver();
+  private WebDriver driver() {
+    return TestContext.getDriver();
   }
 
   public void open() {
-    driver.get(TestContext.getBaseUrl() + "/login");
+    driver().get(TestContext.getBaseUrl() + "/login");
+  }
+
+  public void navigateToRoot() {
+    driver().get(TestContext.getBaseUrl() + "/");
+  }
+
+  public void navigateToPath(String path) {
+    String normalized = path.startsWith("/") ? path : "/" + path;
+    driver().get(TestContext.getBaseUrl() + normalized);
+  }
+
+  public boolean isSignInHeadingVisible() {
+    return isDisplayed();
   }
 
   public boolean isDisplayed() {
-    return driver.findElement(By.xpath(HEADING)).isDisplayed();
+    return driver().findElement(By.xpath(HEADING)).isDisplayed();
   }
 
   public WebElement getUsernameField() {
-    return driver.findElement(By.xpath(USERNAME));
+    return driver().findElement(By.xpath(USERNAME));
   }
 
   public WebElement getPasswordField() {
-    return driver.findElement(By.xpath(PASSWORD));
+    return driver().findElement(By.xpath(PASSWORD));
   }
 
   public WebElement getSubmitButton() {
-    return driver.findElement(By.xpath(SUBMIT));
+    return driver().findElement(By.xpath(SUBMIT));
   }
 
   public void enterCredentials(String username, String password) {

@@ -42,10 +42,9 @@ public class Hooks {
     if (!(driver instanceof TakesScreenshot screenshotDriver)) {
       return;
     }
-    Path evidenceDir = Path.of(System.getProperty("stlc.evidence.dir", "target/stlc-evidence"));
-    Files.createDirectories(evidenceDir);
+    Path screenshotDir = EvidencePaths.screenshotDir();
     byte[] png = screenshotDriver.getScreenshotAs(OutputType.BYTES);
     String stamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
-    Files.write(evidenceDir.resolve("login-dashboard-" + stamp + ".png"), png);
+    Files.write(screenshotDir.resolve("scenario-end-" + stamp + ".png"), png);
   }
 }
