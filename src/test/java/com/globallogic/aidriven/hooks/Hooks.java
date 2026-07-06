@@ -18,8 +18,9 @@ public class Hooks {
   public void setUp() {
     String baseUrl = System.getProperty("app.base.url", "http://localhost:5173");
     TestContext.setBaseUrl(baseUrl.replaceAll("/$", ""));
-    WebDriver driver = WebDriverFactory.createChromeDriver();
-    TestContext.setDriver(driver);
+    if (TestContext.getDriver() == null) {
+      TestContext.setDriver(WebDriverFactory.createChromeDriver());
+    }
   }
 
   @After
