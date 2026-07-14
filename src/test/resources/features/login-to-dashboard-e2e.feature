@@ -1,8 +1,8 @@
 @MAD-97 @ui
 Feature: Login to Dashboard E2E (MAD-97)
-  As a QA tester of the Mobile Banking App
+  As a QA tester
   I want to verify Sign in entry and navigation to Dashboard
-  So that MAD-97 login→dashboard E2E is covered as navigation-only auth
+  So that login→dashboard E2E is covered as navigation-only auth
 
   Background:
     Given the Mobile Banking App base URL is configured
