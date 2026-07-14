@@ -1,0 +1,35 @@
+{
+  "profileId": "java-selenium-cucumber",
+  "label": "Java + Selenium + Cucumber (BDD)",
+  "language": "Java",
+  "testRoots": ["src/test/java", "src/test/resources/features"],
+  "runCommand": "mvn test -Dcucumber.filter.tags=@regression",
+  "smokeCommand": "mvn test -Dcucumber.filter.tags=@smoke",
+  "uiCommand": "mvn test -Dcucumber.filter.tags=@smoke",
+  "ciCommand": "mvn verify",
+  "locatorStrategy": "xpath",
+  "seleniumLocator": {
+    "primary": "xpath",
+    "forbidden": ["cssSelector", "css"]
+  },
+  "forbiddenRunners": ["vitest", "jest", "npm test", "npx vitest", "npx jest"],
+  "confirmedBy": "PRIOR_STAGE_OUTPUT / Test Case Design baseline for MAD-97",
+  "confirmedAt": "2026-07-14T13:07:00.000Z",
+  "jiraKey": "MAD-97",
+  "targetGithub": {
+    "owner": "ksabai-gl",
+    "repo": "AiDrivenTest",
+    "defaultBranch": "main",
+    "harnessBranch": "stlc/MAD-97-ui-harness"
+  },
+  "appBaseUrlProperty": "app.base.url",
+  "evidenceProperty": "stlc.evidence.dir",
+  "appDevServer": {
+    "installCommand": "npm ci",
+    "startCommand": "npm run dev -- --host 127.0.0.1 --port 5173 --strictPort",
+    "readyUrl": "http://127.0.0.1:5173/",
+    "baseUrl": "http://127.0.0.1:5173",
+    "port": 5173,
+    "startupTimeoutMs": 180000
+  }
+}
