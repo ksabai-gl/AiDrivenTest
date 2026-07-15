@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "fixedassets-api": "node fixedassets-api/server.mjs",
+    "test:health": "node --test fixedassets-api/healthResponse.test.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",
