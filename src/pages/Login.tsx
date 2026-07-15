@@ -36,6 +36,12 @@ export default function Login() {
               placeholder="Enter password"
             />
           </label>
+          <p className="form__footer">
+            <label className="form__check">
+              <input type="checkbox" name="remindMe" aria-label="Remind me" />
+              Remind me
+            </label>
+          </p>
           <button className="button" type="submit">
             Login
           </button>
